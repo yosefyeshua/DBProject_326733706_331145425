@@ -1,0 +1,494 @@
+{
+  "diagramType": 2,
+  "data": {
+    "nodes": [
+      {
+        "id": "f4a8a0a3-e29d-41be-a95a-dcb21ca91ce4",
+        "type": "Table",
+        "position": {
+          "x": 650,
+          "y": 183
+        },
+        "data": {
+          "label": "SUPPLIER",
+          "isConnectable": false,
+          "columns": [
+            {
+              "id": "355f4a2b-f8d9-4c57-80ac-e10b1f0a5b41",
+              "name": "SupplierID",
+              "type": "INT",
+              "isPrimaryKey": true,
+              "isOptional": false
+            },
+            {
+              "id": "a99db072-292f-4db4-bad3-fbf8b1bbb4c6",
+              "name": "SupplierName",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "f13944e6-3cea-4184-90d5-534ad0cc1893",
+              "name": "Category",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "234ca506-a4f0-4eca-acb7-ad2b43d57000",
+              "name": "ContactName",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "ff01d8cd-4dc1-4df3-9544-068ebca6d56e",
+              "name": "Phone",
+              "type": "INT",
+              "isPrimaryKey": false
+            }
+          ],
+          "numberOfGroups": 0,
+          "isSelected": false
+        },
+        "measured": {
+          "width": 240,
+          "height": 150
+        },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "707f6e81-e697-4452-87bd-db0b1aee1050",
+        "type": "Table",
+        "position": {
+          "x": 176,
+          "y": 186
+        },
+        "data": {
+          "label": "PRODUCT",
+          "isConnectable": false,
+          "columns": [
+            {
+              "id": "d3d45bac-7323-4197-a612-01bb5aa215b4",
+              "name": "ProductID",
+              "type": "INT",
+              "isPrimaryKey": true,
+              "isOptional": false
+            },
+            {
+              "id": "75dea148-28b2-42a1-975a-e3eaad87ad00",
+              "name": "ProductName",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "c88086c2-2727-436f-abba-9cd916d64905",
+              "name": "UnitPrice",
+              "type": "INT",
+              "isPrimaryKey": false
+            }
+          ],
+          "numberOfGroups": 0,
+          "isSelected": false
+        },
+        "measured": {
+          "width": 240,
+          "height": 100
+        },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "50f6d159-35a0-4fa1-89a6-132016040d4a",
+        "type": "Table",
+        "position": {
+          "x": 120,
+          "y": 368
+        },
+        "data": {
+          "label": "PURCHASEORDERY",
+          "isConnectable": false,
+          "columns": [
+            {
+              "id": "5423cdd8-0b2d-4bad-b7f0-1dd7998c85d0",
+              "name": "TotalAmount",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "47e44a50-bff5-496d-9468-8b07041f47fe",
+              "name": "OrderID",
+              "type": "INT",
+              "isPrimaryKey": true,
+              "isOptional": false
+            },
+            {
+              "id": "58ef651a-96fb-4c8e-9ec1-89ba41a7d871",
+              "name": "OrderDate",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "eb592aaf-ff13-483b-8675-b6e9f5e3a8c6",
+              "name": "Status",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "9d512934-fb73-4edc-a3ca-1c7cced6f0d3",
+              "name": "fk_SUPPLIER",
+              "type": "None",
+              "isForeignKey": true,
+              "foreignKeyProps": {
+                "foreignKeyGroupId": "6ddcfb5f-76b2-4fce-a5e7-1ef2552a0a78",
+                "sourceTableId": "f4a8a0a3-e29d-41be-a95a-dcb21ca91ce4",
+                "columns": [
+                  {
+                    "id": "fk_355f4a2b-f8d9-4c57-80ac-e10b1f0a5b41",
+                    "name": "SupplierID",
+                    "type": "INT"
+                  }
+                ]
+              },
+              "isOptional": false
+            }
+          ],
+          "numberOfGroups": 0,
+          "isSelected": false
+        },
+        "measured": {
+          "width": 240,
+          "height": 150
+        },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "2cf99faf-0871-48dc-b36d-643ce190ef48",
+        "type": "Table",
+        "position": {
+          "x": 633.2535891591275,
+          "y": 375.1337382594028
+        },
+        "data": {
+          "label": "ORDERITEM",
+          "isConnectable": false,
+          "columns": [
+            {
+              "id": "ca373b24-69b5-4be6-8608-1598f2e6cac9",
+              "name": "Quantity",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "10885e9e-1673-4062-b487-8b39071270df",
+              "name": "ActualPrice",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "8eb57efa-c16d-4f6a-967d-967200b73d1c",
+              "name": "fk_PURCHASEORDERY",
+              "type": "None",
+              "isForeignKey": true,
+              "foreignKeyProps": {
+                "foreignKeyGroupId": "66f37135-0cd8-463b-b9b8-af918e223896",
+                "sourceTableId": "50f6d159-35a0-4fa1-89a6-132016040d4a",
+                "columns": [
+                  {
+                    "id": "fk_47e44a50-bff5-496d-9468-8b07041f47fe",
+                    "name": "OrderID",
+                    "type": "INT"
+                  }
+                ]
+              },
+              "isPrimaryKey": true,
+              "isOptional": false
+            },
+            {
+              "id": "25e0293c-081f-4ee7-ad61-7f9bafa97c12",
+              "name": "fk_PRODUCT",
+              "type": "None",
+              "isForeignKey": true,
+              "foreignKeyProps": {
+                "foreignKeyGroupId": "38044c23-1fbf-45f5-9b1c-e8b86c81a24e",
+                "sourceTableId": "707f6e81-e697-4452-87bd-db0b1aee1050",
+                "columns": [
+                  {
+                    "id": "fk_d3d45bac-7323-4197-a612-01bb5aa215b4",
+                    "name": "ProductID",
+                    "type": "INT"
+                  }
+                ]
+              },
+              "isPrimaryKey": true,
+              "isOptional": false
+            }
+          ],
+          "numberOfGroups": 0,
+          "isSelected": false,
+          "isWeak": true
+        },
+        "measured": {
+          "width": 240,
+          "height": 126
+        },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "f1eb18c5-3dd4-4876-a2ad-4ce8b285f68d",
+        "type": "Table",
+        "position": {
+          "x": 633.1700956080986,
+          "y": 562.3976072393361
+        },
+        "data": {
+          "label": "INVOICE",
+          "isConnectable": false,
+          "columns": [
+            {
+              "id": "8d7f1887-97d8-42e2-bb86-66181357cac5",
+              "name": "InvoiceID",
+              "type": "INT",
+              "isPrimaryKey": true,
+              "isOptional": false
+            },
+            {
+              "id": "3e980f51-c87d-45a5-a4ea-058d06056a7d",
+              "name": "InvoiceDate",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "5404ba57-615f-496d-9641-512d349616b1",
+              "name": "TotalDue",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "264a7c7c-a2a6-46cd-b233-9ce2d94dc0f5",
+              "name": "fk_PURCHASEORDERY",
+              "type": "None",
+              "isForeignKey": true,
+              "foreignKeyProps": {
+                "foreignKeyGroupId": "1e49676d-d09d-4774-aa1d-bd9f23651293",
+                "sourceTableId": "50f6d159-35a0-4fa1-89a6-132016040d4a",
+                "columns": [
+                  {
+                    "id": "fk_47e44a50-bff5-496d-9468-8b07041f47fe",
+                    "name": "OrderID",
+                    "type": "INT"
+                  }
+                ]
+              },
+              "isOptional": false
+            }
+          ],
+          "numberOfGroups": 0,
+          "isSelected": false
+        },
+        "measured": {
+          "width": 240,
+          "height": 126
+        },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "ee037ab6-bbf6-4c4b-9f70-b1f8edfa4877",
+        "type": "Table",
+        "position": {
+          "x": 203,
+          "y": 561.7496032714844
+        },
+        "data": {
+          "label": "PAYMENT",
+          "isConnectable": false,
+          "columns": [
+            {
+              "id": "1fd480a4-4d3f-48e7-9582-8f1104ad3727",
+              "name": "PaymentID",
+              "type": "INT",
+              "isPrimaryKey": true,
+              "isOptional": false
+            },
+            {
+              "id": "095b7165-60f9-4f27-b7d2-6951dbff131d",
+              "name": "PaymentDate",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "8cfb96d1-7d1a-4f22-81e7-4bb9f63812b9",
+              "name": "AmountPaid",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "bcf330ed-c7bb-42d2-b579-d9fb988fc7f7",
+              "name": "PaymentMethod",
+              "type": "INT",
+              "isPrimaryKey": false
+            },
+            {
+              "id": "0fc2bfef-3dc2-42f2-beb1-81da63e770f3",
+              "name": "fk_INVOICE",
+              "type": "None",
+              "isForeignKey": true,
+              "foreignKeyProps": {
+                "foreignKeyGroupId": "1cce5f48-256f-46f6-944f-6e305289c861",
+                "sourceTableId": "f1eb18c5-3dd4-4876-a2ad-4ce8b285f68d",
+                "columns": [
+                  {
+                    "id": "fk_8d7f1887-97d8-42e2-bb86-66181357cac5",
+                    "name": "InvoiceID",
+                    "type": "INT"
+                  }
+                ]
+              },
+              "isOptional": false
+            }
+          ],
+          "numberOfGroups": 0,
+          "isSelected": false
+        },
+        "measured": {
+          "width": 240,
+          "height": 150
+        },
+        "selected": false,
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "id": "f4a8a0a3-e29d-41be-a95a-dcb21ca91ce4->50f6d159-35a0-4fa1-89a6-132016040d4a_6ddcfb5f-76b2-4fce-a5e7-1ef2552a0a78",
+        "type": "Relational",
+        "source": "f4a8a0a3-e29d-41be-a95a-dcb21ca91ce4",
+        "targetHandle": "foreign-key-handle-6ddcfb5f-76b2-4fce-a5e7-1ef2552a0a78",
+        "target": "50f6d159-35a0-4fa1-89a6-132016040d4a",
+        "markerStart": {
+          "type": "arrow"
+        },
+        "data": {
+          "foreignKeyProps": {
+            "foreignKeyGroupId": "6ddcfb5f-76b2-4fce-a5e7-1ef2552a0a78",
+            "sourceTableId": "f4a8a0a3-e29d-41be-a95a-dcb21ca91ce4",
+            "columns": [
+              {
+                "id": "fk_355f4a2b-f8d9-4c57-80ac-e10b1f0a5b41",
+                "name": "SupplierID",
+                "type": "INT"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "50f6d159-35a0-4fa1-89a6-132016040d4a->2cf99faf-0871-48dc-b36d-643ce190ef48_66f37135-0cd8-463b-b9b8-af918e223896",
+        "type": "Relational",
+        "source": "50f6d159-35a0-4fa1-89a6-132016040d4a",
+        "targetHandle": "foreign-key-handle-66f37135-0cd8-463b-b9b8-af918e223896",
+        "target": "2cf99faf-0871-48dc-b36d-643ce190ef48",
+        "markerStart": {
+          "type": "arrow"
+        },
+        "data": {
+          "foreignKeyProps": {
+            "foreignKeyGroupId": "66f37135-0cd8-463b-b9b8-af918e223896",
+            "sourceTableId": "50f6d159-35a0-4fa1-89a6-132016040d4a",
+            "columns": [
+              {
+                "id": "fk_47e44a50-bff5-496d-9468-8b07041f47fe",
+                "name": "OrderID",
+                "type": "INT"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "707f6e81-e697-4452-87bd-db0b1aee1050->2cf99faf-0871-48dc-b36d-643ce190ef48_38044c23-1fbf-45f5-9b1c-e8b86c81a24e",
+        "type": "Relational",
+        "source": "707f6e81-e697-4452-87bd-db0b1aee1050",
+        "targetHandle": "foreign-key-handle-38044c23-1fbf-45f5-9b1c-e8b86c81a24e",
+        "target": "2cf99faf-0871-48dc-b36d-643ce190ef48",
+        "markerStart": {
+          "type": "arrow"
+        },
+        "data": {
+          "foreignKeyProps": {
+            "foreignKeyGroupId": "38044c23-1fbf-45f5-9b1c-e8b86c81a24e",
+            "sourceTableId": "707f6e81-e697-4452-87bd-db0b1aee1050",
+            "columns": [
+              {
+                "id": "fk_d3d45bac-7323-4197-a612-01bb5aa215b4",
+                "name": "ProductID",
+                "type": "INT"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "50f6d159-35a0-4fa1-89a6-132016040d4a->f1eb18c5-3dd4-4876-a2ad-4ce8b285f68d_1e49676d-d09d-4774-aa1d-bd9f23651293",
+        "type": "Relational",
+        "source": "50f6d159-35a0-4fa1-89a6-132016040d4a",
+        "targetHandle": "foreign-key-handle-1e49676d-d09d-4774-aa1d-bd9f23651293",
+        "target": "f1eb18c5-3dd4-4876-a2ad-4ce8b285f68d",
+        "markerStart": {
+          "type": "arrow"
+        },
+        "data": {
+          "foreignKeyProps": {
+            "foreignKeyGroupId": "1e49676d-d09d-4774-aa1d-bd9f23651293",
+            "sourceTableId": "50f6d159-35a0-4fa1-89a6-132016040d4a",
+            "columns": [
+              {
+                "id": "fk_47e44a50-bff5-496d-9468-8b07041f47fe",
+                "name": "OrderID",
+                "type": "INT"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "f1eb18c5-3dd4-4876-a2ad-4ce8b285f68d->ee037ab6-bbf6-4c4b-9f70-b1f8edfa4877_1cce5f48-256f-46f6-944f-6e305289c861",
+        "type": "Relational",
+        "source": "f1eb18c5-3dd4-4876-a2ad-4ce8b285f68d",
+        "targetHandle": "foreign-key-handle-1cce5f48-256f-46f6-944f-6e305289c861",
+        "target": "ee037ab6-bbf6-4c4b-9f70-b1f8edfa4877",
+        "markerStart": {
+          "type": "arrow"
+        },
+        "data": {
+          "foreignKeyProps": {
+            "foreignKeyGroupId": "1cce5f48-256f-46f6-944f-6e305289c861",
+            "sourceTableId": "f1eb18c5-3dd4-4876-a2ad-4ce8b285f68d",
+            "columns": [
+              {
+                "id": "fk_8d7f1887-97d8-42e2-bb86-66181357cac5",
+                "name": "InvoiceID",
+                "type": "INT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "viewport": {
+      "x": 496.25887327042904,
+      "y": -2.109331968013066,
+      "zoom": 0.6604218254671553
+    }
+  },
+  "name": "ex1.1-Relational Schema",
+  "folder": {
+    "name": "Diagrams",
+    "folderType": 1,
+    "depth": 0,
+    "id": 298050
+  },
+  "id": 411000,
+  "updatedAtTimestamp": 1776185152
+}
