@@ -52,15 +52,14 @@
 ## 5. אכלוס נתונים
 ביצענו אכלוס של הנתונים באמצעות 3 שיטות שונות:
 1. **Mockaroo:** שימש ליצירת 500 רשומות לטבלאות הספקים, המוצרים והחשבוניות.
-2. **פקודות INSERT פנימיות:** קובץ שיצרנו המכיל 500 פקודות הכנסה לטבלת התשלומים.
-3. **סקריפט Python:** יצרנו סקריפט מותאם אישית שייצר מעל 20,000 הזמנות רכש ושורות הזמנה.
-
+![alt text](images/image%20copy-10.png)
+2. **הקלדה ידנית של נתונים**
+![alt text](images/image%20copy-12.png)
+3. **סקריפט Python:** יצרנו סקריפט מותאם אישית שייצר מעל 20,000 הזמנות רכש ושורות הזמנה. וגם 500 חשבוניות ותשלומים 
+![alt text](images/image%20copy-11.png)
 
 ---
 
 ## 6. שאילות SQL
 ![alt text](images/image-8.png)
 ![alt text](images/image-9.png)
-![alt text](images/image%20copy-10.png)
-![alt text](images/image%20copy-11.png)
-![alt text](images/image%20copy-12.png)
