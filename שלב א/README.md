@@ -61,3 +61,6 @@
 ## 6. שאילות SQL
 ![alt text](images/image-8.png)
 ![alt text](images/image-9.png)
+![alt text](images/image%20copy-10.png)
+![alt text](images/image%20copy-11.png)
+![alt text](images/image%20copy-12.png)
