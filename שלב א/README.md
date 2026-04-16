@@ -63,3 +63,13 @@
 ## 6. שאילות SQL
 ![alt text](images/image-8.png)
 ![alt text](images/image-9.png)
+
+
+---
+
+## 7. שחזור בסיס הנתונים
+
+![alt text](images/image%20copy-13.png)
+
+---
+
