@@ -10,6 +10,7 @@ ADD CONSTRAINT chk_quantity_positive CHECK (Quantity > 0);
 ALTER TABLE PRODUCT 
 ADD CONSTRAINT chk_price_positive CHECK (UnitPrice >= 0);
 
--- אילוץ 3: ערך ברירת מחדל - אם פותחים הזמנה ולא מכניסים סטטוס, היא תוגדר כ-'Pending'
+
+-- אילוץ 3: הגבלת סטטוס הזמנה לרשימה מורשית בלבד (כדי שנוכל להוכיח שגיאה בדוח)
 ALTER TABLE PURCHASEORDER 
-ALTER COLUMN Status SET DEFAULT 'Pending';
+ADD CONSTRAINT chk_valid_status CHECK (Status IN ('Pending', 'Approved', 'Delivered', 'Cancelled'));
