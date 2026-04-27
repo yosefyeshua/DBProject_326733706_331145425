@@ -150,21 +150,36 @@ ORDER BY p.PaymentDate DESC;
 -- חלק ג': 3 שאילתות UPDATE
 -- ==========================================
 
--- 1. עדכון מחירון: העלאת מחיר ב-10% לכל המוצרים מקטגוריית "Veterinary" שמחירם נמוך מ-50.
-UPDATE PRODUCT 
-SET UnitPrice = UnitPrice * 1.10 
-WHERE ProductName LIKE '%Veterinary%' AND UnitPrice < 50;
 
--- 2. סגירת תקופה: שינוי סטטוס הזמנה מ-Pending ל-Approved עבור כל ההזמנות הישנות מ-2023.
-UPDATE PURCHASEORDER 
-SET Status = 'Approved' 
-WHERE EXTRACT(YEAR FROM OrderDate) <= 2023 AND Status = 'Pending';
+-- 1. העלאת מחיר ב-15% למוצרים שהוזמנו בכמות גדולה ב-2023
+UPDATE PRODUCT
+SET UnitPrice = UnitPrice * 1.15
+WHERE ProductID IN (
+    SELECT DISTINCT oi.ProductID
+    FROM ORDERITEM oi
+    JOIN PURCHASEORDER po ON oi.OrderID = po.OrderID
+    WHERE oi.Quantity > 150 AND EXTRACT(YEAR FROM po.OrderDate) = 2023
+);
 
--- 3. הנחת כמות: הוזלת המחיר בפועל (ActualPrice) ב-5% לכל שורת הזמנה בה הוזמנו מעל 200 יחידות.
-UPDATE ORDERITEM 
-SET ActualPrice = ActualPrice * 0.95 
-WHERE Quantity > 200;
 
+
+-- 2. עדכון סכום הזמנה: הפחתת 10% מסך ההזמנות של ספקי "Marketing" ב-2024
+UPDATE PURCHASEORDER
+SET TotalAmount = TotalAmount * 0.90
+WHERE EXTRACT(YEAR FROM OrderDate) = 2024
+AND SupplierID IN (
+    SELECT SupplierID FROM SUPPLIER WHERE Category = 'Marketing'
+);
+
+
+-- 3. הנחת מוצרי "Fresh": הורדת מחיר ב-15% למוצרי "Fresh" שהוזמנו ביולי-אוגוסט
+UPDATE ORDERITEM
+SET ActualPrice = ActualPrice * 0.80
+WHERE ProductID IN (SELECT ProductID FROM PRODUCT WHERE ProductName LIKE '%Fresh%')
+AND OrderID IN (
+    SELECT OrderID FROM PURCHASEORDER 
+    WHERE EXTRACT(MONTH FROM OrderDate) IN (7, 8)
+);
 
 
 -- ==========================================
@@ -173,12 +188,26 @@ WHERE Quantity > 200;
 
 -- 1. ניקוי שגיאות: מחיקת תשלומים שגויים שסכומם נמוך מ-5 דולר (טבלת קצה ללא מפתחות זרים).
 DELETE FROM PAYMENT 
-WHERE AmountPaid < 5;
+WHERE AmountPaid < 8000;
 
--- 2. ניקוי שורות הזמנה אפסיות: מחיקת שורות הזמנה בטעות שבהן הכמות היא 0 (טבלת קצה).
-DELETE FROM ORDERITEM 
-WHERE Quantity = 0;
+-- 2. מחיקת תשלומים בכרטיס אשראי מהחצי הראשון של 2023
+DELETE FROM PAYMENT
+WHERE PaymentMethod = 'Credit Card' 
+AND InvoiceID IN (
+    SELECT i.InvoiceID 
+    FROM INVOICE i
+    JOIN PURCHASEORDER po ON i.OrderID = po.OrderID
+    WHERE EXTRACT(YEAR FROM po.OrderDate) = 2023
+    AND EXTRACT(MONTH FROM po.OrderDate) <= 6
+);
 
--- 3. מחיקת מוצרים "מתים": מחיקת מוצרים מהקטלוג שמעולם לא הוזמנו (שימוש בתת-שאילתה).
-DELETE FROM PRODUCT 
-WHERE ProductID NOT IN (SELECT DISTINCT ProductID FROM ORDERITEM);
+
+-- 3. מחיקת שורות הזמנה ספציפיות: מחיקת שורות הזמנה של מוצרי "Organic" שהכמות בהן נמוכה מ-20 וההזמנה בוצעה ב-2023.
+DELETE FROM ORDERITEM
+WHERE Quantity < 20 
+AND ProductID IN (
+    SELECT ProductID FROM PRODUCT WHERE ProductName LIKE '%Organic%'
+)
+AND OrderID IN (
+    SELECT OrderID FROM PURCHASEORDER WHERE EXTRACT(YEAR FROM OrderDate) = 2023
+);

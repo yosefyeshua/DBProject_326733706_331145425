@@ -33,8 +33,12 @@ WHERE s.SupplierID IN (
 )
 ORDER BY TotalSpent DESC;
 ```
+
 * ![צילום מסך הרצה](images/image1.png)
+
+
 * ![צילום מסך תוצאות](images/image2.png)
+
 
 **הבדלי יעילות:** תצורה א' (JOIN + GROUP BY) הינה היעילה ביותר; שרת ה-SQL מבצע את פקודות ה-Hash Join והחישוב (ה-Aggregation) מידית עבור המשתתפים. בתצורה ב', התת-שאילתה רצה באופן מסורבל, והפילטור על בסיס `IN` מקשה משמעותית על חשיבת מנוע הפוסטגרס המחייבת סריקות חוזרות כבדות.
 
@@ -56,8 +60,13 @@ FROM SUPPLIER s
 LEFT JOIN PURCHASEORDER p ON s.SupplierID = p.SupplierID AND EXTRACT(YEAR FROM p.OrderDate) = 2025
 WHERE p.OrderID IS NULL;
 ```
+
+
 * ![צילום מסך הרצה](images/image3.png)
+
+
 * ![צילום מסך תוצאות](images/image4.png)
+
 
 **הבדלי יעילות:** גרסה ב' (`LEFT JOIN` יחד עם פסילת ערכים ב-`IS NULL`, המושג Anti-Join) נחשבת לשיטה היעילה והמומלצת בהרבה למציאת היעדרויות, השרת מאפטם זאת היטב! גרסה א' (NOT IN) קלה יותר לקריאה בעין אנושית אולם עלולה להיות פחות יעילה במיוחד כשנכנסים ערכי `NULL` בחיתוכים.
 
@@ -84,7 +93,11 @@ FROM INVOICE i
 WHERE i.TotalDue > (SELECT COALESCE(SUM(AmountPaid), 0) FROM PAYMENT WHERE InvoiceID = i.InvoiceID)
 ORDER BY Debt DESC;
 ```
+
+
 * ![צילום מסך הרצה](images/image5.png)
+
+
 * ![צילום מסך תוצאות](images/image6.png)
 
 **הבדלי יעילות:** תצורה א' מבצעת חיבור מרוכז (JOIN). מרווחי השליפה יוצרים מפה אחת שעליה מנוע המסד רוכב ומבצע רצף אגרסיוני יעיל. בתצורה ב', התת-שאילתות שב-SELECT וב-WHERE מקושרות, כלומר הן רצות מחדש (הלוך חזור על בסיס משתנה אינדקס i.InvoiceID) עבור *כל שורה ושורה* בכרטיסיות החשבוניות. זו כתיבה איטית באופן תהומי.
@@ -117,8 +130,13 @@ WHERE pr.ProductName LIKE '%Premium%'
   AND pr.UnitPrice > (SELECT AVG(UnitPrice) FROM PRODUCT)
 ORDER BY Aggregated.TotalQty DESC;
 ```
+
+
 * ![צילום מסך הרצה](images/image7.png)
+
+
 * ![צילום מסך תוצאות](images/image8.png)
+
 
 **הבדלי יעילות:** תלוי באילוצי שרת הזיכרון, אך לעיתים קרובות Inline View (תצורה ב') עשויה לקבל יתרון מפלט בשאילתות ענק, מכיוון שאנו כופים על המערכת לצמצם (Aggregate) תחילה את שורות ה-ORDERITEM בנפרד טרם חיבור (JOIN) הענק לטבלאות קטלוג המוצרים, וזה מרוקן עומסים מכמות המידע שנשמרת על הכוונת בזיכרון.
 
@@ -137,7 +155,10 @@ FROM PURCHASEORDER
 GROUP BY EXTRACT(YEAR FROM OrderDate), EXTRACT(MONTH FROM OrderDate)
 ORDER BY OrderYear DESC, OrderMonth DESC;
 ```
-* **[>> צילום מסך של הרצת השאילתה + צילום תוצאה מותאמת <<]**
+
+* ![צילום מסך הרצה](images/image9.png)
+
+
 
 #### שאילתה 6: "פירוט שרשרת אספקה ענק"
 **תיאור השאילתא:** צירוף של 4 טבלאות שונות לחשיפה ופירוט מלא של הזמנות בסכום מעל 20,000, כולל שמות הספקים והמוצרים מהעבר.
@@ -152,7 +173,10 @@ WHERE po.TotalAmount > 20000
 ORDER BY po.TotalAmount DESC, po.OrderID
 LIMIT 100;
 ```
-* **[>> צילום מסך של הרצת השאילתה + צילום תוצאה מותאמת <<]**
+
+
+* ![צילום מסך הרצה](images/image10.png)
+
 
 #### שאילתה 7: "פער מחירי קטלוג לעומת רכש בפועל"
 **תיאור השאילתא:** מאתרת במדויק מוצרים שהמחיר בו הם נקנו בסוף השורה בפועל (ActualPrice) היה נמוך משמעותית ממחיר הקטלוג המקורי (השגת הנחות!).
@@ -166,7 +190,10 @@ GROUP BY pr.ProductID, pr.ProductName, pr.UnitPrice
 HAVING AVG(oi.ActualPrice) < pr.UnitPrice
 ORDER BY AverageDiscount DESC;
 ```
-* **[>> צילום מסך של הרצת השאילתה + צילום תוצאה מותאמת <<]**
+
+
+* ![צילום מסך הרצה](images/image11.png)
+
 
 #### שאילתה 8: "תזרים מזומנים - העברות בנקאיות בחצי השנה האחרונה"
 **תיאור השאילתא:** מציג למנהלי כספים רק תשלומים שבוצעו בשיטת העברה בנקאית 'Bank Transfer' ורק מחצי השנה האחרונה (התמודדות טבעית עם מאפייני זמן מתגלגלים).
@@ -180,7 +207,10 @@ WHERE p.PaymentMethod = 'Bank Transfer'
   AND p.PaymentDate > CURRENT_DATE - INTERVAL '6 months'
 ORDER BY p.PaymentDate DESC;
 ```
-* **[>> צילום מסך של הרצת השאילתה + צילום תוצאה מותאמת <<]**
+
+
+* ![צילום מסך הרצה](images/image12.png)
+
 
 ---
 
