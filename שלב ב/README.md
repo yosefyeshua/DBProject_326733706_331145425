@@ -33,8 +33,13 @@ WHERE s.SupplierID IN (
 )
 ORDER BY TotalSpent DESC;
 ```
+
+##### הרצת שאילתה 1 - תצורה א':
 * ![צילום מסך הרצה](images/image1.png)
+
+##### הרצת שאילתה 1 - תצורה ב' (תוצאה זהה):
 * ![צילום מסך תוצאות](images/image2.png)
+
 
 **הבדלי יעילות:** תצורה א' (JOIN + GROUP BY) הינה היעילה ביותר; שרת ה-SQL מבצע את פקודות ה-Hash Join והחישוב (ה-Aggregation) מידית עבור המשתתפים. בתצורה ב', התת-שאילתה רצה באופן מסורבל, והפילטור על בסיס `IN` מקשה משמעותית על חשיבת מנוע הפוסטגרס המחייבת סריקות חוזרות כבדות.
 
@@ -56,8 +61,14 @@ FROM SUPPLIER s
 LEFT JOIN PURCHASEORDER p ON s.SupplierID = p.SupplierID AND EXTRACT(YEAR FROM p.OrderDate) = 2025
 WHERE p.OrderID IS NULL;
 ```
+
+
+##### הרצת שאילתה 2 - תצורה א':
 * ![צילום מסך הרצה](images/image3.png)
+
+##### הרצת שאילתה 2 - תצורה ב' (תוצאה זהה):
 * ![צילום מסך תוצאות](images/image4.png)
+
 
 **הבדלי יעילות:** גרסה ב' (`LEFT JOIN` יחד עם פסילת ערכים ב-`IS NULL`, המושג Anti-Join) נחשבת לשיטה היעילה והמומלצת בהרבה למציאת היעדרויות, השרת מאפטם זאת היטב! גרסה א' (NOT IN) קלה יותר לקריאה בעין אנושית אולם עלולה להיות פחות יעילה במיוחד כשנכנסים ערכי `NULL` בחיתוכים.
 
@@ -84,7 +95,12 @@ FROM INVOICE i
 WHERE i.TotalDue > (SELECT COALESCE(SUM(AmountPaid), 0) FROM PAYMENT WHERE InvoiceID = i.InvoiceID)
 ORDER BY Debt DESC;
 ```
+
+
+##### הרצת שאילתה 3 - תצורה א':
 * ![צילום מסך הרצה](images/image5.png)
+
+##### הרצת שאילתה 3 - תצורה ב' (תוצאה זהה):
 * ![צילום מסך תוצאות](images/image6.png)
 
 **הבדלי יעילות:** תצורה א' מבצעת חיבור מרוכז (JOIN). מרווחי השליפה יוצרים מפה אחת שעליה מנוע המסד רוכב ומבצע רצף אגרסיוני יעיל. בתצורה ב', התת-שאילתות שב-SELECT וב-WHERE מקושרות, כלומר הן רצות מחדש (הלוך חזור על בסיס משתנה אינדקס i.InvoiceID) עבור *כל שורה ושורה* בכרטיסיות החשבוניות. זו כתיבה איטית באופן תהומי.
@@ -117,8 +133,14 @@ WHERE pr.ProductName LIKE '%Premium%'
   AND pr.UnitPrice > (SELECT AVG(UnitPrice) FROM PRODUCT)
 ORDER BY Aggregated.TotalQty DESC;
 ```
+
+
+##### הרצת שאילתה 4 - תצורה א':
 * ![צילום מסך הרצה](images/image7.png)
+
+##### הרצת שאילתה 4 - תצורה ב' (תוצאה זהה):
 * ![צילום מסך תוצאות](images/image8.png)
+
 
 **הבדלי יעילות:** תלוי באילוצי שרת הזיכרון, אך לעיתים קרובות Inline View (תצורה ב') עשויה לקבל יתרון מפלט בשאילתות ענק, מכיוון שאנו כופים על המערכת לצמצם (Aggregate) תחילה את שורות ה-ORDERITEM בנפרד טרם חיבור (JOIN) הענק לטבלאות קטלוג המוצרים, וזה מרוקן עומסים מכמות המידע שנשמרת על הכוונת בזיכרון.
 
@@ -137,7 +159,10 @@ FROM PURCHASEORDER
 GROUP BY EXTRACT(YEAR FROM OrderDate), EXTRACT(MONTH FROM OrderDate)
 ORDER BY OrderYear DESC, OrderMonth DESC;
 ```
-* **[>> צילום מסך של הרצת השאילתה + צילום תוצאה מותאמת <<]**
+
+* ![צילום מסך הרצה](images/image9.png)
+
+
 
 #### שאילתה 6: "פירוט שרשרת אספקה ענק"
 **תיאור השאילתא:** צירוף של 4 טבלאות שונות לחשיפה ופירוט מלא של הזמנות בסכום מעל 20,000, כולל שמות הספקים והמוצרים מהעבר.
@@ -152,7 +177,10 @@ WHERE po.TotalAmount > 20000
 ORDER BY po.TotalAmount DESC, po.OrderID
 LIMIT 100;
 ```
-* **[>> צילום מסך של הרצת השאילתה + צילום תוצאה מותאמת <<]**
+
+
+* ![צילום מסך הרצה](images/image10.png)
+
 
 #### שאילתה 7: "פער מחירי קטלוג לעומת רכש בפועל"
 **תיאור השאילתא:** מאתרת במדויק מוצרים שהמחיר בו הם נקנו בסוף השורה בפועל (ActualPrice) היה נמוך משמעותית ממחיר הקטלוג המקורי (השגת הנחות!).
@@ -166,7 +194,10 @@ GROUP BY pr.ProductID, pr.ProductName, pr.UnitPrice
 HAVING AVG(oi.ActualPrice) < pr.UnitPrice
 ORDER BY AverageDiscount DESC;
 ```
-* **[>> צילום מסך של הרצת השאילתה + צילום תוצאה מותאמת <<]**
+
+
+* ![צילום מסך הרצה](images/image11.png)
+
 
 #### שאילתה 8: "תזרים מזומנים - העברות בנקאיות בחצי השנה האחרונה"
 **תיאור השאילתא:** מציג למנהלי כספים רק תשלומים שבוצעו בשיטת העברה בנקאית 'Bank Transfer' ורק מחצי השנה האחרונה (התמודדות טבעית עם מאפייני זמן מתגלגלים).
@@ -180,7 +211,10 @@ WHERE p.PaymentMethod = 'Bank Transfer'
   AND p.PaymentDate > CURRENT_DATE - INTERVAL '6 months'
 ORDER BY p.PaymentDate DESC;
 ```
-* **[>> צילום מסך של הרצת השאילתה + צילום תוצאה מותאמת <<]**
+
+
+* ![צילום מסך הרצה](images/image12.png)
+
 
 ---
 
@@ -188,49 +222,141 @@ ORDER BY p.PaymentDate DESC;
 
 ### שאילתות UPDATE
 
-1. **עדכון מחירון וטרינרי:** העלאת מחיר ב-10% לכל המוצרים מקטגוריית "Veterinary" שמחירם קטן מ-50.
-```sql
-UPDATE PRODUCT SET UnitPrice = UnitPrice * 1.10 
-WHERE ProductName LIKE '%Veterinary%' AND UnitPrice < 50;
-```
-* **[>> צילום הרצת השאילתה <<]**
-* **[>> צילום מסך מצב בסיס הנתונים לפני ואחרי העדכון בטבלה <<]**
+#### UPDATE 1: "העלאת מחיר ב-15% למוצרים שהוזמנו בכמות גדולה ב-2023"
+**תיאור:** מוצרים שהוזמנו ב-2023 בכמויות גדולות (מעל 150 יחידות) מקבלים העלאת מחיר של 15%, משום שהם מוצרי "best seller" המצדיקים מחיר גבוה יותר.
 
-2. **החלת מצב תקופתי אוטומטי:** סגירה ושינוי סטטוס הזמנה מ-Pending ל-Approved סדרתי עבור ההזמנות הישנות שטרחתו מאז 2023.
 ```sql
-UPDATE PURCHASEORDER SET Status = 'Approved' 
-WHERE EXTRACT(YEAR FROM OrderDate) <= 2023 AND Status = 'Pending';
+UPDATE PRODUCT
+SET UnitPrice = UnitPrice * 1.15
+WHERE ProductID IN (
+    SELECT DISTINCT oi.ProductID
+    FROM ORDERITEM oi
+    JOIN PURCHASEORDER po ON oi.OrderID = po.OrderID
+    WHERE oi.Quantity > 150 AND EXTRACT(YEAR FROM po.OrderDate) = 2023
+);
 ```
-* **[>> צילום הרצת השאילתה <<]**
-* **[>> צילום מסך מצב בסיס הנתונים לפני ואחרי העדכון הרדיקלי <<]**
 
-3. **הנחת כמות ריאלית להזמנה:** הוזלת המחיר בפועל שנמשך אחורנית ב-5% לכל שורת פריט שבה נרשמה כמות גדולה מ-200.
+##### הנתונים לפני העדכון:
+* ![צילום מסך לפני העדכון](updet/image.png)
+
+##### ביצוע שאילתת העדכון (UPDATE):
+* ![צילום מסך ביצוע](updet/image%20copy.png)
+
+##### הנתונים לאחר העדכון:
+* ![צילום מסך לאחר העדכון](updet/image%20copy%202.png)
+
+
+#### UPDATE 2: "הפחתת 10% מסך ההזמנות של ספקי Marketing ב-2024"
+**תיאור:** כל הזמנות שנרכשו מספקים מקטגוריית "Marketing" בשנת 2024 מקבלות הנחה קבוצתית של 10% על סך ההזמנה.
+
 ```sql
-UPDATE ORDERITEM SET ActualPrice = ActualPrice * 0.95 WHERE Quantity > 200;
+UPDATE PURCHASEORDER
+SET TotalAmount = TotalAmount * 0.90
+WHERE EXTRACT(YEAR FROM OrderDate) = 2024
+AND SupplierID IN (
+    SELECT SupplierID FROM SUPPLIER WHERE Category = 'Marketing'
+);
 ```
-* **[>> צילום הרצת השאילתה <<]**
-* **[>> צילום מסך מצב בסיס הנתונים לפני ואחרי <<]**
+
+##### הנתונים לפני העדכון:
+* ![צילום מסך לפני העדכון](updet/image%20copy%203.png)
+
+##### ביצוע שאילתת העדכון (UPDATE):
+* ![צילום מסך ביצוע](updet/image%20copy%204.png)
+
+##### הנתונים לאחר העדכון:
+* ![צילום מסך לאחר העדכון](updet/image%20copy%205.png)
+
+#### UPDATE 3: "הנחת מוצרי Fresh - הורדת מחיר ב-20% להזמנות ביולי-אוגוסט"
+**תיאור:** מוצרי "Fresh" שהוזמנו בחודשי קיץ (יולי ואוגוסט) מקבלים הנחה משמעותית של 20% מן המחיר בפועל, משום שהם פגיעים ודורשים מהירות משלוח.
+
+```sql
+UPDATE ORDERITEM
+SET ActualPrice = ActualPrice * 0.80
+WHERE ProductID IN (SELECT ProductID FROM PRODUCT WHERE ProductName LIKE '%Fresh%')
+AND OrderID IN (
+    SELECT OrderID FROM PURCHASEORDER 
+    WHERE EXTRACT(MONTH FROM OrderDate) IN (7, 8)
+);
+```
+
+##### הנתונים לפני העדכון:
+* ![צילום מסך לפני העדכון](updet/image%20copy%206.png)
+
+##### ביצוע שאילתת העדכון (UPDATE):
+* ![צילום מסך ביצוע](updet/image%20copy%207.png)
+
+##### הנתונים לאחר העדכון:
+* ![צילום מסך לאחר העדכון](updet/image%20copy%208.png)
+
 
 ### שאילתות DELETE
 
-1. **ניקוי שגיאות חישוב מיקרו במערכת (טבלת קצה):** השמדת כל טופסי התשלומים שיש בהם במכוון פחות מ-5 דולר משום שאלו שגויים.
-```sql
-DELETE FROM PAYMENT WHERE AmountPaid < 5;
-```
-* **[>> צילום הרצה + צילום מסך לפני/אחרי <<]**
+#### DELETE 1: "ניקוי שגיאות - מחיקת תשלומים שגויים שסכומם נמוך מ-$8000"
+**תיאור:** טבלת PAYMENT הוא טבלת "קצה" ללא מפתחות זרים התלויים בה, לכן ניתן למחוק בה בדירוג ישיר. תשלומים בסכומים קטנים מ-$8000 נחשבים לשגיאות במערכת ונמחקים.
 
-2. **ניקוי שורות רוח (0 כמות):** מחיקת שורות קצה המלמדות שכמות ההזמנה שיצאה בפועל הינה מחוסרת משמעות (אפס).
 ```sql
-DELETE FROM ORDERITEM WHERE Quantity = 0;
+DELETE FROM PAYMENT 
+WHERE AmountPaid < 8000;
 ```
-* **[>> צילום הרצה + צילום מסך לפני/אחרי <<]**
 
-3. **הסרת מוצרים רדומים באמצעות תת-שאילתה דינאמית:** משמיד מקטלוג מניפת המוצרים את המוצרים שלעולם לא דרכו בשורת רכש מתישהו.
+##### הנתונים לפני המחיקה:
+* ![צילום מסך לפני המחיקה](delete/image.png)
+
+##### ביצוע שאילתת המחיקה (DELETE):
+* ![צילום מסך ביצוע](delete/image%20copy.png)
+
+##### הנתונים לאחר המחיקה:
+* ![צילום מסך לאחר המחיקה](delete/image%20copy%202.png)
+
+#### DELETE 2: "מחיקת תשלומים בכרטיס אשראי מהחצי הראשון של 2023"
+**תיאור:** לצורכי ניקיון היסטוריה, מחקנו את כל התשלומים שבוצעו בכרטיס אשראי (Credit Card) בחצי הראשון של 2023, כשהתשלומים מקושרים להזמנות של אותה תקופה.
+
 ```sql
-DELETE FROM PRODUCT 
-WHERE ProductID NOT IN (SELECT DISTINCT ProductID FROM ORDERITEM);
+DELETE FROM PAYMENT
+WHERE PaymentMethod = 'Credit Card' 
+AND InvoiceID IN (
+    SELECT i.InvoiceID 
+    FROM INVOICE i
+    JOIN PURCHASEORDER po ON i.OrderID = po.OrderID
+    WHERE EXTRACT(YEAR FROM po.OrderDate) = 2023
+    AND EXTRACT(MONTH FROM po.OrderDate) <= 6
+);
 ```
-* **[>> צילום הרצה + צילום מסך לפני/אחרי <<]**
+
+##### הנתונים לפני המחיקה:
+* ![צילום מסך לפני המחיקה](delete/image%20copy%203.png)
+
+##### ביצוע שאילתת המחיקה (DELETE):
+* ![צילום מסך ביצוע](delete/image%20copy%204.png)
+
+##### הנתונים לאחר המחיקה:
+* ![צילום מסך לאחר המחיקה](delete/image%20copy%205.png)
+
+#### DELETE 3: "מחיקת שורות הזמנה לא משמעותיות - מוצרי Organic עם כמות נמוכה ב-2023"
+**תיאור:** שורות הזמנה קטנות מ-20 יחידות של מוצרי "Organic" מ-2023 נמחקות, משום שהן לא משמעותיות מבחינה כלכלית וגוזלות משאבי אחזוקה במסד.
+
+```sql
+DELETE FROM ORDERITEM
+WHERE Quantity < 20 
+AND ProductID IN (
+    SELECT ProductID FROM PRODUCT WHERE ProductName LIKE '%Organic%'
+)
+AND OrderID IN (
+    SELECT OrderID FROM PURCHASEORDER WHERE EXTRACT(YEAR FROM OrderDate) = 2023
+);
+```
+
+
+##### הנתונים לפני המחיקה:
+* ![צילום מסך לפני המחיקה](delete/image%20copy%206.png)
+
+##### ביצוע שאילתת המחיקה (DELETE):
+* ![צילום מסך ביצוע 1](delete/image%20copy%207.png)
+* ![צילום מסך ביצוע 2](delete/image%20copy%208.png)
+
+##### הנתונים לאחר המחיקה:
+* ![צילום מסך לאחר המחיקה](delete/image%20copy%209.png)
 
 ---
 
