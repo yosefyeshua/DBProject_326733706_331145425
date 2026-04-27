@@ -218,49 +218,123 @@ ORDER BY p.PaymentDate DESC;
 
 ### שאילתות UPDATE
 
-1. **עדכון מחירון וטרינרי:** העלאת מחיר ב-10% לכל המוצרים מקטגוריית "Veterinary" שמחירם קטן מ-50.
-```sql
-UPDATE PRODUCT SET UnitPrice = UnitPrice * 1.10 
-WHERE ProductName LIKE '%Veterinary%' AND UnitPrice < 50;
-```
-* **[>> צילום הרצת השאילתה <<]**
-* **[>> צילום מסך מצב בסיס הנתונים לפני ואחרי העדכון בטבלה <<]**
+#### UPDATE 1: "העלאת מחיר ב-15% למוצרים שהוזמנו בכמות גדולה ב-2023"
+**תיאור:** מוצרים שהוזמנו ב-2023 בכמויות גדולות (מעל 150 יחידות) מקבלים העלאת מחיר של 15%, משום שהם מוצרי "best seller" המצדיקים מחיר גבוה יותר.
 
-2. **החלת מצב תקופתי אוטומטי:** סגירה ושינוי סטטוס הזמנה מ-Pending ל-Approved סדרתי עבור ההזמנות הישנות שטרחתו מאז 2023.
 ```sql
-UPDATE PURCHASEORDER SET Status = 'Approved' 
-WHERE EXTRACT(YEAR FROM OrderDate) <= 2023 AND Status = 'Pending';
+UPDATE PRODUCT
+SET UnitPrice = UnitPrice * 1.15
+WHERE ProductID IN (
+    SELECT DISTINCT oi.ProductID
+    FROM ORDERITEM oi
+    JOIN PURCHASEORDER po ON oi.OrderID = po.OrderID
+    WHERE oi.Quantity > 150 AND EXTRACT(YEAR FROM po.OrderDate) = 2023
+);
 ```
-* **[>> צילום הרצת השאילתה <<]**
-* **[>> צילום מסך מצב בסיס הנתונים לפני ואחרי העדכון הרדיקלי <<]**
 
-3. **הנחת כמות ריאלית להזמנה:** הוזלת המחיר בפועל שנמשך אחורנית ב-5% לכל שורת פריט שבה נרשמה כמות גדולה מ-200.
+* ![צילום מסך הרצה](updet/image.png)
+* ![צילום מסך תוצאות](updet/image%20copy.png)
+
+#### UPDATE 2: "הפחתת 10% מסך ההזמנות של ספקי Marketing ב-2024"
+**תיאור:** כל הזמנות שנרכשו מספקים מקטגוריית "Marketing" בשנת 2024 מקבלות הנחה קבוצתית של 10% על סך ההזמנה.
+
 ```sql
-UPDATE ORDERITEM SET ActualPrice = ActualPrice * 0.95 WHERE Quantity > 200;
+UPDATE PURCHASEORDER
+SET TotalAmount = TotalAmount * 0.90
+WHERE EXTRACT(YEAR FROM OrderDate) = 2024
+AND SupplierID IN (
+    SELECT SupplierID FROM SUPPLIER WHERE Category = 'Marketing'
+);
 ```
-* **[>> צילום הרצת השאילתה <<]**
-* **[>> צילום מסך מצב בסיס הנתונים לפני ואחרי <<]**
+
+* ![צילום מסך הרצה](updet/image%20copy%202.png)
+* ![צילום מסך תוצאות](updet/image%20copy%203.png)
+
+#### UPDATE 3: "הנחת מוצרי Fresh - הורדת מחיר ב-20% להזמנות ביולי-אוגוסט"
+**תיאור:** מוצרי "Fresh" שהוזמנו בחודשי קיץ (יולי ואוגוסט) מקבלים הנחה משמעותית של 20% מן המחיר בפועל, משום שהם פגיעים ודורשים מהירות משלוח.
+
+```sql
+UPDATE ORDERITEM
+SET ActualPrice = ActualPrice * 0.80
+WHERE ProductID IN (SELECT ProductID FROM PRODUCT WHERE ProductName LIKE '%Fresh%')
+AND OrderID IN (
+    SELECT OrderID FROM PURCHASEORDER 
+    WHERE EXTRACT(MONTH FROM OrderDate) IN (7, 8)
+);
+```
+
+* ![צילום מסך הרצה](updet/image%20copy%204.png)
+* ![צילום מסך תוצאות](updet/image%20copy%205.png)
 
 ### שאילתות DELETE
 
-1. **ניקוי שגיאות חישוב מיקרו במערכת (טבלת קצה):** השמדת כל טופסי התשלומים שיש בהם במכוון פחות מ-5 דולר משום שאלו שגויים.
-```sql
-DELETE FROM PAYMENT WHERE AmountPaid < 5;
-```
-* **[>> צילום הרצה + צילום מסך לפני/אחרי <<]**
+#### DELETE 1: "ניקוי שגיאות - מחיקת תשלומים שגויים שסכומם נמוך מ-$8000"
+**תיאור:** טבלת PAYMENT הוא טבלת "קצה" ללא מפתחות זרים התלויים בה, לכן ניתן למחוק בה בדירוג ישיר. תשלומים בסכומים קטנים מ-$8000 נחשבים לשגיאות במערכת ונמחקים.
 
-2. **ניקוי שורות רוח (0 כמות):** מחיקת שורות קצה המלמדות שכמות ההזמנה שיצאה בפועל הינה מחוסרת משמעות (אפס).
 ```sql
-DELETE FROM ORDERITEM WHERE Quantity = 0;
+DELETE FROM PAYMENT 
+WHERE AmountPaid < 8000;
 ```
-* **[>> צילום הרצה + צילום מסך לפני/אחרי <<]**
 
-3. **הסרת מוצרים רדומים באמצעות תת-שאילתה דינאמית:** משמיד מקטלוג מניפת המוצרים את המוצרים שלעולם לא דרכו בשורת רכש מתישהו.
+* ![צילום מסך הרצה](delete/image.png)
+
+
+* ![צילום מסך תוצאות](delete/image%20copy.png)
+
+
+* ![צילום מסך הרצה](delete/image%20copy%202.png)
+
+#### DELETE 2: "מחיקת תשלומים בכרטיס אשראי מהחצי הראשון של 2023"
+**תיאור:** לצורכי ניקיון היסטוריה, מחקנו את כל התשלומים שבוצעו בכרטיס אשראי (Credit Card) בחצי הראשון של 2023, כשהתשלומים מקושרים להזמנות של אותה תקופה.
+
 ```sql
-DELETE FROM PRODUCT 
-WHERE ProductID NOT IN (SELECT DISTINCT ProductID FROM ORDERITEM);
+DELETE FROM PAYMENT
+WHERE PaymentMethod = 'Credit Card' 
+AND InvoiceID IN (
+    SELECT i.InvoiceID 
+    FROM INVOICE i
+    JOIN PURCHASEORDER po ON i.OrderID = po.OrderID
+    WHERE EXTRACT(YEAR FROM po.OrderDate) = 2023
+    AND EXTRACT(MONTH FROM po.OrderDate) <= 6
+);
 ```
-* **[>> צילום הרצה + צילום מסך לפני/אחרי <<]**
+
+* ![צילום מסך תוצאות](delete/image%20copy%203.png)
+
+* ![צילום מסך הרצה](delete/image%20copy%204.png)
+
+* ![צילום מסך הרצה](delete/image%20copy%205.png)
+
+#### DELETE 3: "מחיקת שורות הזמנה לא משמעותיות - מוצרי Organic עם כמות נמוכה ב-2023"
+**תיאור:** שורות הזמנה קטנות מ-20 יחידות של מוצרי "Organic" מ-2023 נמחקות, משום שהן לא משמעותיות מבחינה כלכלית וגוזלות משאבי אחזוקה במסד.
+
+```sql
+DELETE FROM ORDERITEM
+WHERE Quantity < 20 
+AND ProductID IN (
+    SELECT ProductID FROM PRODUCT WHERE ProductName LIKE '%Organic%'
+)
+AND OrderID IN (
+    SELECT OrderID FROM PURCHASEORDER WHERE EXTRACT(YEAR FROM OrderDate) = 2023
+);
+```
+
+
+* ![צילום מסך תוצאות](delete/image%20copy%206.png)
+
+* ![צילום מסך הרצה](delete/image%20copy%207.png)
+
+* ![צילום מסך הרצה](delete/image%20copy%208.png)
+
+
+
+
+
+
+* ![צילום מסך תוצאות](delete/image%20copy%209.png)
+
+
+
 
 ---
 
