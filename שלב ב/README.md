@@ -427,51 +427,51 @@ ALTER TABLE PURCHASEORDER ADD CONSTRAINT chk_valid_status CHECK (Status IN ('Pen
 
 ##### הרצה ראשונה (זמן ביצוע ארוך):
 שאילתת EXPLAIN ANALYZE שרצה בשיטת "Seq Scan" (סריקה איטית שורה-שורה).
-* ![זמן ריצה לפני אינדקס 1](INDEX/image.png)
+* ![זמן ריצה לפני אינדקס 1](index/image.png)
 
 ##### פעולת יצירת האינדקס:
 ```sql
 CREATE INDEX idx_order_date ON PURCHASEORDER(OrderDate);
 ```
-* ![יצירת אינדקס 1](INDEX/image%20copy.png)
+* ![יצירת אינדקס 1](index/image%20copy.png)
 
 ##### הרצה שנייה (זמן קצר):
 ניתן לראות שה-Execution Time צנח משמעותית והמערכת משתמשת ב-"Index Scan" (סריקה מהירה על בסיס האינדקס שיצרנו).
-* ![זמן ריצה אחרי אינדקס 1](INDEX/image%20copy%202.png)
+* ![זמן ריצה אחרי אינדקס 1](index/image%20copy%202.png)
 
 
 ### 2. אינדקס על מפתח זר לשם ספק (`SupplierID` בהזמנות)
 מסייע בהצלבות נתונים במקרים של חיפוש כל ההזמנות ששייכות לספק מסוים. ללא אינדקס, חיבור ספק לעשרות אלפי הזמנות דורש סריקה מלאה של כל הטבלה.
 
 ##### הרצה ראשונה (זמן ביצוע ארוך):
-* ![זמן ריצה לפני אינדקס 2](INDEX/image%20copy%203.png)
+* ![זמן ריצה לפני אינדקס 2](index/image%20copy%203.png)
 
 ##### פעולת יצירת האינדקס:
 ```sql
 CREATE INDEX idx_fk_supplier ON PURCHASEORDER(SupplierID);
 ```
-* ![יצירת אינדקס 2](INDEX/image%20copy%204.png)
+* ![יצירת אינדקס 2](index/image%20copy%204.png)
 
 ##### הרצה שנייה (זמן קצר):
 ה-Execution Time צונח והמערכת מבצעת "Index Scan".
-* ![זמן ריצה אחרי אינדקס 2](INDEX/image%20copy%205.png)
+* ![זמן ריצה אחרי אינדקס 2](index/image%20copy%205.png)
 
 
 ### 3. אינדקס הצרנה של שם המוצר (`ProductName` בקטלוג המוצרים)
 אינדקס שנועד לזרז חיפושים טקסטואליים של שמות מוצרים במערכת.
 
 ##### הרצה ראשונה (זמן ביצוע ארוך):
-* ![זמן ריצה לפני אינדקס 3](INDEX/image%20copy%206.png)
+* ![זמן ריצה לפני אינדקס 3](index/image%20copy%206.png)
 
 ##### פעולת יצירת האינדקס:
 ```sql
 CREATE INDEX idx_product_name ON PRODUCT(ProductName);
 ```
-* ![יצירת אינדקס 3](INDEX/image%20copy%207.png)
+* ![יצירת אינדקס 3](index/image%20copy%207.png)
 
 ##### הרצה שנייה (זמן קצר):
 שליפה מהירה הרבה יותר דרך האינדקס המיועד.
-* ![זמן ריצה אחרי אינדקס 3](INDEX/image%20copy%208.png)
+* ![זמן ריצה אחרי אינדקס 3](index/image%20copy%208.png)
 
 ---
 
